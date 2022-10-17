@@ -126,7 +126,7 @@ class ChannelsDVRRecentlyRecordedSensor(Entity):
         """Only look for recorded programs"""
         recordings = [x for x in files if x.get("JobID", "") != "" and x.get("Deleted", False) == False]
         recordings.sort(
-            reverse=True, key=lambda x: parse(x["Airing"]["Raw"]["startTime"])
+            reverse=True, key=lambda x: parse(x["Airing"]["Raw"]["startTime"]).strftime("%Y-%m-%dT%H:%M:%SZ")
         )
 
         if self.dl_images:
@@ -175,7 +175,7 @@ class ChannelsDVRRecentlyRecordedSensor(Entity):
                 RUNTIME: episode["Raw"].get("duration", 0),
                 GENRES: episode.get("Genres", ""),
                 RATING: ""
-                if not episode["Raw"]["ratings"]
+                if not hasattr(episode["Raw"], "ratings")
                 else episode["Raw"]["ratings"][0]["code"],
                 POSTER: episode["Raw"]["program"]["preferredImage"].get("uri", ""),
             }
